@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: raw_crypto_jobs # Tên nhóm data
+    database: postgres
+    schema: public
+    tables:
+      - name: raw_jobs
+        description: "Bảng chứa dữ liệu việc làm thô cào từ các trang tuyển dụng"

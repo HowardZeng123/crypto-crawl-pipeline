@@ -1,0 +1,23 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+my_venv/
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+
+# dbt
+dbt_job_market/target/
+dbt_job_market/dbt_packages/
+dbt_job_market/logs/
+!dbt_job_market/profiles.yml
+
+.vscode/
+.DS_Store

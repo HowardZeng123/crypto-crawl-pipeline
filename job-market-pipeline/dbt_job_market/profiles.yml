@@ -1,0 +1,12 @@
+dbt_job_market:
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('DBT_HOST') }}"
+      user: "{{ env_var('DBT_USER') }}"
+      pass: "{{ env_var('DBT_PASS') }}"
+      port: 6543
+      dbname: postgres
+      schema: public
+      threads: 4
+  target: dev
