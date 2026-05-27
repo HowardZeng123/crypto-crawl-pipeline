@@ -1,6 +1,7 @@
 name: Job Market Pipeline
 
 on:
+  push:
   schedule:
     # Chạy tự động lúc 00:00 mỗi ngày (giờ UTC)
     - cron: '0 0 * * *'
@@ -9,6 +10,9 @@ on:
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: job-market-pipeline
     
     steps:
       - name: Checkout code
