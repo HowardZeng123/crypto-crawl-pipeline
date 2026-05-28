@@ -9,6 +9,17 @@ load_dotenv(find_dotenv())
 DB_CONN = os.getenv('DB_CONN')
 DISCORD_WEBHOOK_URL = os.getenv('DISCORD_WEBHOOK_URL')
 
+
+def ensure_alert_history_table(cur):
+    cur.execute(
+        """
+        create table if not exists alert_history (
+            job_id text primary key,
+            alerted_at timestamptz default now()
+        )
+        """
+    )
+
 def send_discord_alert(job):
     """Đóng gói data thành một cái thẻ (Embed) siêu đẹp trên Discord"""
     
@@ -49,6 +60,9 @@ def send_discord_alert(job):
         return False
 
 def main():
+    if not DB_CONN:
+        print("Missing DB_CONN in .env")
+        return
     if not DISCORD_WEBHOOK_URL:
         print("Chưa có DISCORD_WEBHOOK_URL trong file .env!")
         return
@@ -58,11 +72,15 @@ def main():
         conn = psycopg.connect(DB_CONN)
         cur = conn.cursor()
         
+        ensure_alert_history_table(cur)
+
         # TUYỆT CHIÊU: Trích xuất các job nằm trong mart_jobs nhưng CHƯA CÓ trong alert_history
         cur.execute("""
             SELECT job_id, job_title, company_name, location, raw_salary, estimated_salary_vnd_million 
-            FROM mart_jobs 
-            WHERE job_id NOT IN (SELECT job_id FROM alert_history)
+            FROM mart_jobs mj
+            WHERE NOT EXISTS (
+                SELECT 1 FROM alert_history ah WHERE ah.job_id = mj.job_id::text
+            )
         """)
         
         new_jobs = cur.fetchall()
@@ -77,7 +95,10 @@ def main():
             
             # Nếu gửi Discord thành công thì mới lưu vào lịch sử
             if send_discord_alert(job):
-                cur.execute("INSERT INTO alert_history (job_id) VALUES (%s)", (job_id,))
+                cur.execute(
+                    "INSERT INTO alert_history (job_id) VALUES (%s) ON CONFLICT (job_id) DO NOTHING",
+                    (str(job_id),)
+                )
                 conn.commit()
                 alert_count += 1
                 

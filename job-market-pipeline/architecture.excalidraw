@@ -242,7 +242,7 @@
       "strokeStyle": "solid",
       "roughness": 1,
       "opacity": 100,
-      "text": "dbt\n- stg_jobs (dedup)\n- mart_jobs (salary)",
+      "text": "dbt\n- stg_crypto_jobs (dedup)\n- mart_jobs (salary)",
       "fontSize": 14,
       "fontFamily": 1,
       "textAlign": "left",

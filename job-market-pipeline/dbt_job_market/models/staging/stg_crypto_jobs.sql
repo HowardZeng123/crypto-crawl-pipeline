@@ -1,10 +1,8 @@
 {{ config(
-    materialized='view',
-    alias='stg_crypto_jobs' -- dbt sẽ tạo ra View tên này trên Supabase
+    materialized='table'
 ) }}
 
 with raw_data as (
-    -- Nhớ đổi tên chỗ này để nó hút data từ bảng thô của mảng Crypto
     select * from {{ source('job_market', 'raw_crypto_jobs') }} 
 ),
 

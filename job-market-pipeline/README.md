@@ -4,7 +4,7 @@ End-to-end data pipeline that crawls job postings from multiple sources, loads r
 
 ## Architecture
 
-Sources -> Crawlers (Python) -> raw_jobs (Postgres/Supabase)
+Sources -> Crawlers (Python) -> raw_crypto_jobs (Postgres/Supabase)
     -> dbt staging (dedup + clean) -> dbt mart (salary parsing)
     -> Discord alert bot
 
@@ -20,22 +20,22 @@ Sources -> Crawlers (Python) -> raw_jobs (Postgres/Supabase)
 
 ## Project Structure
 
-- crawler/: source-specific crawlers
+- crawler/: source-specific crawlers (LinkedIn implemented)
 - dbt_job_market/: dbt project (staging + marts)
 - alert_bot.py: sends alerts for new jobs
 - .github/workflows/pipeline.yml: daily scheduled pipeline
 
 ## Data Models
 
-- raw_jobs: raw ingestion table
-- stg_jobs: deduplicated and cleaned jobs
+- raw_crypto_jobs: raw ingestion table
+- stg_crypto_jobs: deduplicated and cleaned jobs
 - mart_jobs: salary parsing and analytics-ready output
 
 ## Orchestration (GitHub Actions)
 
 - Schedule: daily at 00:00 UTC
 - Steps: run crawlers -> dbt run -> send Discord alerts
-- Workflow: .github/workflows/pipeline.yml
+- Workflow: add .github/workflows/pipeline.yml if you want scheduling
 
 ## Setup (Local)
 
@@ -53,10 +53,6 @@ pip install dbt-postgres
 3) Run crawlers:
 
 ```bash
-python crawler/itviec_crawler.py
-python crawler/vnworks_crawler.py
-python crawler/topcv_crawler.py
-python crawler/joboko_crawler.py
 python crawler/linkedin_crawler.py
 ```
 
@@ -74,5 +70,7 @@ python alert_bot.py
 
 ## Notes
 
-- Dedup happens in dbt staging (stg_jobs)
+- Dedup happens in dbt staging (stg_crypto_jobs)
 - Salary normalization happens in mart_jobs
+- The crawler auto-creates raw_crypto_jobs if missing
+- The alert bot auto-creates alert_history if missing

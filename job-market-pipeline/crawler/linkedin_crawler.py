@@ -32,6 +32,27 @@ def get_db_connection():
         print(f"Lỗi kết nối Database: {e}")
         return None
 
+
+def ensure_raw_crypto_jobs_table(conn):
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                create table if not exists raw_crypto_jobs (
+                    id bigserial primary key,
+                    title text,
+                    company text,
+                    salary text,
+                    location text,
+                    created_at timestamptz default now()
+                )
+                """
+            )
+        conn.commit()
+    except Exception as e:
+        print(f"Lỗi khi tạo bảng raw_crypto_jobs: {e}")
+        conn.rollback()
+
 def crawl_linkedin():
     print("Bắt đầu cào dữ liệu từ LinkedIn (Guest API)...")
     
@@ -123,9 +144,9 @@ def insert_to_supabase(conn, jobs_data):
                 # Dùng ON CONFLICT DO NOTHING để chống trùng lặp y chang cái cũ
                 cur.execute(
                     """
-                    INSERT INTO raw_jobs (title, company, salary, location, created_at) 
+                    INSERT INTO raw_crypto_jobs (title, company, salary, location, created_at) 
                     VALUES (%s, %s, %s, %s, %s)
-                    ON CONFLICT (title, company) DO NOTHING
+                    ON CONFLICT DO NOTHING
                     """,
                     (job[0], job[1], job[2], job[3], datetime.now())
                 )
@@ -138,6 +159,7 @@ def insert_to_supabase(conn, jobs_data):
 def main():
     conn = get_db_connection()
     if conn:
+        ensure_raw_crypto_jobs_table(conn)
         jobs_data = crawl_linkedin()
         insert_to_supabase(conn, jobs_data)
         conn.close()

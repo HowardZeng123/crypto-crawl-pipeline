@@ -1,13 +1,12 @@
 {{ config(
     materialized='incremental',
     unique_key='job_id',
-    on_schema_change='sync_all_columns',
-    alias='mart_crypto_jobs' -- dbt sẽ tạo ra bảng tên này trên Supabase
+    on_schema_change='sync_all_columns'
 ) }}
 
 with staging as (
     -- Lấy data từ lớp Silver (dùng ref thay vì source)
-    select * from {{ ref('stg_jobs') }}
+    select * from {{ ref('stg_crypto_jobs') }}
     {% if is_incremental() %}
     where ingested_at > (select coalesce(max(ingested_at), '1900-01-01') from {{ this }})
     {% endif %}
