@@ -77,7 +77,7 @@ def main():
         # TUYỆT CHIÊU: Trích xuất các job nằm trong mart_jobs nhưng CHƯA CÓ trong alert_history
         cur.execute("""
             SELECT job_id, job_title, company_name, location, raw_salary, estimated_salary_vnd_million 
-            FROM mart_jobs mj
+            FROM FROM mart_crypto_jobs mj
             WHERE NOT EXISTS (
                 SELECT 1 FROM alert_history ah WHERE ah.job_id = mj.job_id::text
             )
