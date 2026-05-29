@@ -67,7 +67,7 @@ def main():
         print("Chưa có DISCORD_WEBHOOK_URL trong file .env!")
         return
 
-    print("Đang quét các job mới từ mart_jobs...")
+    print("Đang quét các job mới từ mart_crypto_jobs...")
     try:
         conn = psycopg.connect(DB_CONN)
         cur = conn.cursor()
@@ -77,7 +77,7 @@ def main():
         # TUYỆT CHIÊU: Trích xuất các job nằm trong mart_jobs nhưng CHƯA CÓ trong alert_history
         cur.execute("""
             SELECT job_id, job_title, company_name, location, raw_salary, estimated_salary_vnd_million 
-            FROM FROM mart_crypto_jobs mj
+            FROM mart_crypto_jobs mj
             WHERE NOT EXISTS (
                 SELECT 1 FROM alert_history ah WHERE ah.job_id = mj.job_id::text
             )
