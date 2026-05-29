@@ -97,7 +97,7 @@ def main():
             if send_discord_alert(job):
                 cur.execute(
                     "INSERT INTO alert_history (job_id) VALUES (%s) ON CONFLICT (job_id) DO NOTHING",
-                    (str(job_id),)
+                    (job_id,)
                 )
                 conn.commit()
                 alert_count += 1
