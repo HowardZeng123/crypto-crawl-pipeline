@@ -42,7 +42,7 @@ jobs:
           DBT_PASS: ${{ secrets.SUPABASE_PASSWORD }}
           DB_CONN: ${{ secrets.DB_CONN }}
         run: |
-          dbt deps
+          dbt deps --project-dir dbt_job_market --profiles-dir dbt_job_market
           dbt run --project-dir dbt_job_market --profiles-dir dbt_job_market --target dev
 
       - name: Send Discord Alerts
